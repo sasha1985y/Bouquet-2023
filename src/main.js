@@ -5,6 +5,9 @@ import { iosVhFix } from "./utils/ios-vh-fix";
 import { modals, initModals } from "./modals/init-modals";
 
 // Ваши импорты...
+import ProductsApiService from "./products-api-service.js";
+import ProductsModel from "./model/products-model.js";
+import ContentPresenter from "./presenter/content-presenter.js";
 
 // Код для работы попапов, не удаляйте его
 window.addEventListener("DOMContentLoaded", () => {
@@ -32,4 +35,17 @@ window.addEventListener("DOMContentLoaded", () => {
   // ------------
 
   // Ваш код...
+
+  
+  const AUTHORIZATION = 'Basic sasha2023boquet';
+  const END_POINT = 'https://grading.objects.pages.academy/flowers-shop';
+  
+  const productsModel = new ProductsModel({
+    productsApiService: new ProductsApiService(END_POINT, AUTHORIZATION)
+  });
+  
+  const contentPresenter = new ContentPresenter({productsModel: productsModel});
+
+  productsModel.init();
+  contentPresenter.init();
 });

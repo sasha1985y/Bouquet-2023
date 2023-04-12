@@ -1,6 +1,6 @@
-# Проект «{{projectTitle}}»
+# Проект «{{Bouquet}}»
 
-* Студент: [{{userName}}]({{userProfile}}).
+* Студент: [{{Александр Куянцев}}]({{https://htmlacademy.ru/profile/667_sasha_667}}).
 
 ---
 

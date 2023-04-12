@@ -1,0 +1,3 @@
+const UpdateType = {
+    INIT: 'INIT'
+};
