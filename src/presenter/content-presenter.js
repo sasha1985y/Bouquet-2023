@@ -1,4 +1,4 @@
-import { render, remove, RenderPosition } from '../framework/render.js';
+import { render } from '../framework/render.js';
 import UpdateType from '../const.js';
 import HeroView from '../view/hero-view.js';
 import MissionView from '../view/mission-view.js';
@@ -12,14 +12,15 @@ import CatalogueListView from '../view/catalogue-list-view.js';
 import CatalogueBtnWrapView from '../view/catalogue-btn-wrap-view.js';
 import CatalogueShowMoreBtnView from '../view/catalogue-show-more-btn-view.js';
 import ProductPresenter from './product-presenter.js';
+import NoItemsView from '../view/no-items-view.js';
+
+const PRODUCT_COUNT_PER_STEP = 3;
 
 export default class ContentPresenter {
   #productsModel = null;
   #appMainContainer = null;
+  #appContentContainer = null;
   #appPopupContainer = null;
-
-  #productComponent = null;
-  #ProductPopupComponent = null;
 
   #heroView = new HeroView();
   #missionView = new MissionView();
@@ -32,17 +33,21 @@ export default class ContentPresenter {
   #catalogueListView = new CatalogueListView();
   #catalogueBtnWrapView = new CatalogueBtnWrapView();
   #catalogueShowMoreBtnView = new CatalogueShowMoreBtnView();
+  #noItemsView = new NoItemsView();
 
   #contentProducts = [];
+  #renderedProductCount = PRODUCT_COUNT_PER_STEP;
 
   constructor({
     productsModel,
     appMainContainer,
-    appPopupContainer
+    appContentContainer,
+    appPopupContainer,
   }) {
     this.#productsModel = productsModel;
     this.#productsModel.addObserver(this.#handleModelEvent);
     this.#appMainContainer = appMainContainer;
+    this.#appContentContainer = appContentContainer;
     this.#appPopupContainer = appPopupContainer;
   }
 
@@ -64,13 +69,19 @@ export default class ContentPresenter {
 
       this.#renderBoard({products: this.#contentProducts});
 
-      for (let i = 0; i < this.#contentProducts.length; i++) {
-        this.#renderProduct({product: this.#contentProducts[i]});
+      if (this.#contentProducts.length === 0) {
+        render(this.#noItemsView, this.#catalogueListView.element);
+      } else {
+
+        for (let i = 0; i < Math.min(this.#contentProducts.length, PRODUCT_COUNT_PER_STEP); i++) {
+          this.#renderProduct({product: this.#contentProducts[i]});
+        }
       }
+
     }
   };
 
-  #renderBoard({products}) {
+  #renderBoard() {
     render(this.#heroView, this.#appMainContainer);
     render(this.#missionView, this.#appMainContainer);
     render(this.#advantagesView, this.#appMainContainer);
@@ -82,6 +93,5 @@ export default class ContentPresenter {
     render(this.#catalogueListView, this.#containerView.element);
     render(this.#catalogueBtnWrapView, this.#containerView.element);
     render(this.#catalogueShowMoreBtnView, this.#catalogueBtnWrapView.element);
-    console.log(products);
   }
 }

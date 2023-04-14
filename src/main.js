@@ -45,11 +45,13 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   const mainContainer = document.querySelector('main');
+  const modalContentContainer = document.querySelector('modal__content');
   const popupContainer = document.querySelector('.modal-product');
 
   const contentPresenter = new ContentPresenter({
     productsModel: productsModel,
     appMainContainer: mainContainer,
+    appContentContainer: modalContentContainer,
     appPopupContainer: popupContainer
   });
 
