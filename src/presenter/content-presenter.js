@@ -1,5 +1,7 @@
-import { render } from '../framework/render.js';
+import { render, remove } from '../framework/render.js';
 import UpdateType from '../const.js';
+import HeaderContainerView from '../view/header-container-view.js';
+import PopupDefferedView from '../view/popup-deffered-view.js';
 import HeroView from '../view/hero-view.js';
 import MissionView from '../view/mission-view.js';
 import AdvantagesView from '../view/advantages-view.js';
@@ -21,19 +23,25 @@ export default class ContentPresenter {
   #appMainContainer = null;
   #appContentContainer = null;
   #appPopupContainer = null;
+  #appHeaderWrapperContainer = null;
 
-  #heroView = new HeroView();
-  #missionView = new MissionView();
-  #advantagesView = new AdvantagesView();
-  #filterReasonView = new FilterReasonView();
-  #filterColorView = new FilterColorView();
-  #catalogueView = new CatalogueView();
-  #containerView = new ContainerView();
-  #catalogueHeaderView = new CatalogueHeaderView();
-  #catalogueListView = new CatalogueListView();
-  #catalogueBtnWrapView = new CatalogueBtnWrapView();
-  #catalogueShowMoreBtnView = new CatalogueShowMoreBtnView();
-  #noItemsView = new NoItemsView();
+  #headerHandlerComponent = null;
+  #popupDefferedComponent = null;
+  #appPopupDefferedContainer = null;
+
+  #catalogueShowMoreBtnComponent = null;
+
+  #heroComponent = new HeroView();
+  #missionComponent = new MissionView();
+  #advantagesComponent = new AdvantagesView();
+  #filterReasonComponent = new FilterReasonView();
+  #filterColorComponent = new FilterColorView();
+  #catalogueComponent = new CatalogueView();
+  #containerComponent = new ContainerView();
+  #catalogueHeaderComponent = new CatalogueHeaderView();
+  #catalogueListComponent = new CatalogueListView();
+  #catalogueBtnWrapComponent = new CatalogueBtnWrapView();
+  #noItemsComponent = new NoItemsView();
 
   #contentProducts = [];
   #renderedProductCount = PRODUCT_COUNT_PER_STEP;
@@ -43,34 +51,36 @@ export default class ContentPresenter {
     appMainContainer,
     appContentContainer,
     appPopupContainer,
+    appHeaderWrapperContainer,
+    appPopupDefferedContainer
   }) {
     this.#productsModel = productsModel;
     this.#productsModel.addObserver(this.#handleModelEvent);
     this.#appMainContainer = appMainContainer;
     this.#appContentContainer = appContentContainer;
     this.#appPopupContainer = appPopupContainer;
+    this.#appHeaderWrapperContainer = appHeaderWrapperContainer;
+    this.#appPopupDefferedContainer = appPopupDefferedContainer;
   }
-
-  #renderProduct({product}) {
-    const productPresenter = new ProductPresenter({
-      catalogueListView: this.#catalogueListView,
-      appPopupContainer: this.#appPopupContainer
-    });
-    productPresenter.init(product);
-  }
-
-  init = () => {
-    //this.#renderBoard();
-  };
 
   #handleModelEvent = (updateType) => {
     if(updateType === UpdateType.INIT) {
       this.#contentProducts = [...this.#productsModel.products];
 
-      this.#renderBoard({products: this.#contentProducts});
+      this.#headerHandlerComponent = new HeaderContainerView({
+        onHeaderCountBtnClick: () => {
+          this.#popupDefferedComponent = new PopupDefferedView({
+            onDefferedClose: () => {
+              remove(this.#popupDefferedComponent, this.#appPopupDefferedContainer);
+            }
+          });
+          render(this.#popupDefferedComponent, this.#appPopupDefferedContainer);
+        }
+      });
+      render(this.#headerHandlerComponent, this.#appHeaderWrapperContainer);
 
       if (this.#contentProducts.length === 0) {
-        render(this.#noItemsView, this.#catalogueListView.element);
+        render(this.#noItemsComponent, this.#catalogueListComponent.element);
       } else {
 
         for (let i = 0; i < Math.min(this.#contentProducts.length, PRODUCT_COUNT_PER_STEP); i++) {
@@ -78,20 +88,45 @@ export default class ContentPresenter {
         }
       }
 
+      this.#renderBoard();
+
+      this.#catalogueShowMoreBtnComponent = new CatalogueShowMoreBtnView({
+        onClick: () => {
+          const currentProductsLength = this.#contentProducts.slice(this.#renderedProductCount, this.#renderedProductCount + PRODUCT_COUNT_PER_STEP);
+          for (let i = 0; i < Math.min(currentProductsLength.length, PRODUCT_COUNT_PER_STEP); i++) {
+            this.#renderProduct({product: currentProductsLength[i]});
+          }
+          this.#renderedProductCount += PRODUCT_COUNT_PER_STEP;
+
+          if (this.#renderedProductCount >= this.#contentProducts.length) {
+            remove(this.#catalogueShowMoreBtnComponent);
+          }
+        }
+      });
+      render(this.#catalogueShowMoreBtnComponent, this.#catalogueBtnWrapComponent.element);
+
+      //console.log(this.#contentProducts);
     }
   };
 
+  #renderProduct({product}) {
+    const productPresenter = new ProductPresenter({
+      catalogueListComponent: this.#catalogueListComponent,
+      appPopupContainer: this.#appPopupContainer
+    });
+    productPresenter.init(product);
+  }
+
   #renderBoard() {
-    render(this.#heroView, this.#appMainContainer);
-    render(this.#missionView, this.#appMainContainer);
-    render(this.#advantagesView, this.#appMainContainer);
-    render(this.#filterReasonView, this.#appMainContainer);
-    render(this.#filterColorView, this.#appMainContainer);
-    render(this.#catalogueView, this.#appMainContainer);
-    render(this.#containerView, this.#catalogueView.element);
-    render(this.#catalogueHeaderView, this.#containerView.element);
-    render(this.#catalogueListView, this.#containerView.element);
-    render(this.#catalogueBtnWrapView, this.#containerView.element);
-    render(this.#catalogueShowMoreBtnView, this.#catalogueBtnWrapView.element);
+    render(this.#heroComponent, this.#appMainContainer);
+    render(this.#missionComponent, this.#appMainContainer);
+    render(this.#advantagesComponent, this.#appMainContainer);
+    render(this.#filterReasonComponent, this.#appMainContainer);
+    render(this.#filterColorComponent, this.#appMainContainer);
+    render(this.#catalogueComponent, this.#appMainContainer);
+    render(this.#containerComponent, this.#catalogueComponent.element);
+    render(this.#catalogueHeaderComponent, this.#containerComponent.element);
+    render(this.#catalogueListComponent, this.#containerComponent.element);
+    render(this.#catalogueBtnWrapComponent, this.#containerComponent.element);
   }
 }

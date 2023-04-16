@@ -47,14 +47,18 @@ window.addEventListener('DOMContentLoaded', () => {
   const mainContainer = document.querySelector('main');
   const modalContentContainer = document.querySelector('modal__content');
   const popupContainer = document.querySelector('.modal-product');
+  const headerWrapperContainer = document.querySelector('.header__wrapper');
+  const popupDefferedContainer = document.querySelector('.deffered-content');
 
-  const contentPresenter = new ContentPresenter({
+  new ContentPresenter({
     productsModel: productsModel,
     appMainContainer: mainContainer,
     appContentContainer: modalContentContainer,
-    appPopupContainer: popupContainer
+    appPopupContainer: popupContainer,
+    appHeaderWrapperContainer: headerWrapperContainer,
+    appPopupDefferedContainer: popupDefferedContainer
   });
 
   productsModel.init();
-  contentPresenter.init();
+  //contentPresenter.init();
 });

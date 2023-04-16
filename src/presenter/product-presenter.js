@@ -5,20 +5,22 @@ import ProductPopupView from '../view/product-popup-view.js';
 export default class ProductPresenter {
   #product = null;
 
-  #catalogueListView = null;
+  #catalogueListComponent = null;
   #appContentContainer = null;
   #appPopupContainer = null;
 
   #productComponent = null;
   #productPopupComponent = null;
 
+  #checkedPresenter = new Map();
+
 
   constructor({
-    catalogueListView,
+    catalogueListComponent,
     appContentContainer,
     appPopupContainer
   }) {
-    this.#catalogueListView = catalogueListView;
+    this.#catalogueListComponent = catalogueListComponent;
     this.#appContentContainer = appContentContainer;
     this.#appPopupContainer = appPopupContainer;
   }
@@ -32,10 +34,11 @@ export default class ProductPresenter {
 
     this.#productPopupComponent = new ProductPopupView({
       product: this.#product,
-      onPopupClose: this.#handlePopupClose,
-      onWindowClickPopupClose: this.#handleWindowClickPopupClose
+      onCheckButtonClick: this.#handleCheckButtonClick,
+      onUnCheckButtonClick: this.#handleUnCheckButtonClick,
+
     });
-    render(this.#productComponent, this.#catalogueListView.element);
+    render(this.#productComponent, this.#catalogueListComponent.element);
   }
 
   #appendPopupByWindow() {
@@ -60,14 +63,13 @@ export default class ProductPresenter {
     this.#appendPopupByWindow();
   };
 
-  #handlePopupClose = (evt) => {
-    if (evt.key === 'onmousedown') {
-      evt.preventDefault();
-      this.#removePopupFromWindow();
-    }
+  #handleCheckButtonClick = () => {
+    this.#checkedPresenter.set(this.#product.id, this.#product);
+    //console.log(this.#checkedPresenter);
   };
 
-  #handleWindowClickPopupClose = () => {
-    this.#removePopupFromWindow();
+  #handleUnCheckButtonClick = () => {
+    this.#checkedPresenter.delete(this.#product.id);
+    //console.log(this.#checkedPresenter);
   };
 }
