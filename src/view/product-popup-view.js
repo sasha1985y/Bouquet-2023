@@ -45,8 +45,8 @@ const createProductPopupTemplate = (product) => {
           <h3 class="title title--h2">${title}</h3><b class="price price--size-big">${price}<span>Р</span></b>
         </div>
         <p class="text text--size-40">${description}</p>
-        <button class="btn btn--outlined btn--full-width product-description__button" type="button" data-focus="">отложить
-        </button>
+        <button class="btn btn--outlined btn--full-width product-description__button to-differ" type="button" data-focus="">отложить</button>
+        <button class="btn btn--outlined btn--full-width product-description__button differed visually-hidden" type="button" data-focus="">отложено</button>
       </div>
     </div>`
   );
@@ -54,14 +54,38 @@ const createProductPopupTemplate = (product) => {
 
 export default class ProductPopupView extends AbstractView {
   #product = null;
+  #handleCheckButtonClick = null;
+  #handleUnCheckButtonClick = null;
 
-  constructor({product}) {
+  constructor({product, onCheckButtonClick, onUnCheckButtonClick}) {
     super();
     this.#product = product;
-  }
+    this.#handleCheckButtonClick = onCheckButtonClick;
+    this.#handleUnCheckButtonClick = onUnCheckButtonClick;
 
+    this.element.querySelector('.to-differ')
+      .addEventListener('click', this.#checkButtonClickHandler);
+    this.element.querySelector('.differed')
+      .addEventListener('click', this.#unCheckButtonClickHandler);
+  }
 
   get template() {
     return createProductPopupTemplate(this.#product);
   }
+
+  #checkButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleCheckButtonClick(this.#product.id);
+    this.element.querySelector('.differed')
+      .classList.remove('visually-hidden');
+    evt.target.classList.add('visually-hidden');
+  };
+
+  #unCheckButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleUnCheckButtonClick(this.#product.id);
+    this.element.querySelector('.to-differ')
+      .classList.remove('visually-hidden');
+    evt.target.classList.add('visually-hidden');
+  };
 }

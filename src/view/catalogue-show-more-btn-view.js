@@ -7,7 +7,20 @@ const createCatalogueShowMoreBtnTemplate =
 
 export default class CatalogueShowMoreBtnView extends AbstractView {
 
+  #handleCatalogueShowMoreButtonClick = null;
+
+  constructor({onClick}) {
+    super();
+    this.#handleCatalogueShowMoreButtonClick = onClick;
+    this.element.addEventListener('click', this.#catalogueShowMoreButtonClickHandler);
+  }
+
   get template() {
     return createCatalogueShowMoreBtnTemplate();
   }
+
+  #catalogueShowMoreButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleCatalogueShowMoreButtonClick();
+  };
 }
