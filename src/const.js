@@ -1,3 +1,3 @@
 const UpdateType = {
-    INIT: 'INIT'
+  INIT: 'INIT'
 };

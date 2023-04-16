@@ -40,7 +40,35 @@ const createFilterReasonTemplate =
 
 export default class FilterReasonView extends AbstractView {
 
+  #handleFilterChange = null;
+
+  constructor({onFilterChange}) {
+    super();
+    this.#handleFilterChange = onFilterChange;
+
+    this.element.querySelectorAll('input')[0]
+      .addEventListener('change', this.#filterChangeHandler);
+    this.element.querySelectorAll('input')[1]
+      .addEventListener('change', this.#filterChangeHandler);
+    this.element.querySelectorAll('input')[2]
+      .addEventListener('change', this.#filterChangeHandler);
+    this.element.querySelectorAll('input')[3]
+      .addEventListener('change', this.#filterChangeHandler);
+    this.element.querySelectorAll('input')[4]
+      .addEventListener('change', this.#filterChangeHandler);
+    this.element.querySelectorAll('input')[5]
+      .addEventListener('change', this.#filterChangeHandler);
+
+  }
+
   get template() {
     return createFilterReasonTemplate();
   }
+
+  #filterChangeHandler = (evt) => {
+    if (evt.target.tagName === 'INPUT') {
+      evt.preventDefault();
+      this.#handleFilterChange(evt.target.id);
+    }
+  };
 }
