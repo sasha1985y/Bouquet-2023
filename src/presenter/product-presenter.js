@@ -1,32 +1,43 @@
-import {render, remove} from '../framework/render.js';
+import {render, remove, replace} from '../framework/render.js';
 import ProductView from '../view/product-view.js';
 import ProductPopupView from '../view/product-popup-view.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
+/**
+ * Класс для рендеринга карточек и расширенных карточек
+ */
 export default class ProductPresenter {
-  #product = null;
 
   #catalogueListComponent = null;
-  #appContentContainer = null;
   #appPopupContainer = null;
 
   #productComponent = null;
   #productPopupComponent = null;
+  #handleModeChange = null;
 
-  #checkedPresenter = new Map();
-
+  #product = null;
+  #mode = Mode.DEFAULT;
 
   constructor({
     catalogueListComponent,
-    appContentContainer,
-    appPopupContainer
+    appPopupContainer,
+    onModeChange
   }) {
     this.#catalogueListComponent = catalogueListComponent;
-    this.#appContentContainer = appContentContainer;
     this.#appPopupContainer = appPopupContainer;
+    this.#handleModeChange = onModeChange;
   }
 
   init(product) {
     this.#product = product;
+
+    const prevProductComponent = this.#productComponent;
+    const prevProductPopupComponent = this.#productPopupComponent;
+
     this.#productComponent = new ProductView({
       product: this.#product,
       onEditClick: this.#handleEditClick
@@ -39,37 +50,72 @@ export default class ProductPresenter {
 
     });
     render(this.#productComponent, this.#catalogueListComponent.element);
+
+    if (prevProductComponent === null || prevProductPopupComponent === null) {
+      render(this.#productComponent, this.#catalogueListComponent.element);
+      return;
+    }
+
+    if (this.#mode === Mode.DEFAULT) {
+      replace(this.#productComponent, prevProductComponent);
+    }
+
+    if (this.#mode === Mode.EDITING) {
+      replace(this.#productPopupComponent, prevProductPopupComponent);
+    }
+
+    remove(prevProductComponent);
+    remove(prevProductPopupComponent);
+  }
+
+  destroy() {
+    remove(this.#productComponent);
+    remove(this.#productPopupComponent);
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#removePopupFromWindow();
+    }
   }
 
   #appendPopupByWindow() {
     this.#appPopupContainer.appendChild(this.#productPopupComponent.element);
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
   }
 
-  #removePopupFromWindow() {
+  #removeEscPopupFromWindow() {
     this.#appPopupContainer.removeChild(this.#productPopupComponent.element);
     remove(this.#productPopupComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.DEFAULT;
   }
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.#removePopupFromWindow();
+      this.#removeEscPopupFromWindow();
     }
   };
+
+  #removePopupFromWindow(){
+    remove(this.#productPopupComponent, this.#appPopupContainer.element);
+    remove(this.#productPopupComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.DEFAULT;
+  }
 
   #handleEditClick = () => {
     this.#appendPopupByWindow();
   };
 
   #handleCheckButtonClick = () => {
-    this.#checkedPresenter.set(this.#product.id, this.#product);
-    //console.log(this.#checkedPresenter);
+
   };
 
   #handleUnCheckButtonClick = () => {
-    this.#checkedPresenter.delete(this.#product.id);
-    //console.log(this.#checkedPresenter);
+
   };
 }

@@ -75,7 +75,7 @@ export default class ProductPopupView extends AbstractView {
 
   #checkButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleCheckButtonClick(this.#product.id);
+    this.#handleCheckButtonClick();
     this.element.querySelector('.differed')
       .classList.remove('visually-hidden');
     evt.target.classList.add('visually-hidden');
@@ -83,7 +83,7 @@ export default class ProductPopupView extends AbstractView {
 
   #unCheckButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleUnCheckButtonClick(this.#product.id);
+    this.#handleUnCheckButtonClick();
     this.element.querySelector('.to-differ')
       .classList.remove('visually-hidden');
     evt.target.classList.add('visually-hidden');

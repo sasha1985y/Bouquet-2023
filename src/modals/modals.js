@@ -117,7 +117,7 @@ export class Modals {
     } else {
       this.close(target.closest("[data-modal]").dataset.modal);
       this._stackModalElements = [];
-      document.querySelector('.popup-content').remove();
+
     }
   }
 
@@ -224,7 +224,7 @@ export class Modals {
     }
 
     this.close(activeModal);
-    document.querySelector('.popup-content').remove();
+
   }
 
   close(modalName = this._modalName) {

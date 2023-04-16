@@ -4,7 +4,9 @@ const createCatalogueShowMoreBtnTemplate =
 () => (
   '<button class="btn btn--outlined catalogue__show-more-btn" type="button">больше букетов</button>'
 );
-
+/**
+ * Класс для рендеринга кнопки допоказа карточек с букетами
+ */
 export default class CatalogueShowMoreBtnView extends AbstractView {
 
   #handleCatalogueShowMoreButtonClick = null;
