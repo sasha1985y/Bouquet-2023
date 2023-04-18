@@ -18,6 +18,7 @@ export default class ProductPresenter {
   #productComponent = null;
   #productPopupComponent = null;
   #handleModeChange = null;
+  #handleDataChange = null;
 
   #product = null;
   #mode = Mode.DEFAULT;
@@ -25,11 +26,13 @@ export default class ProductPresenter {
   constructor({
     catalogueListComponent,
     appPopupContainer,
-    onModeChange
+    onModeChange,
+    onDataChange
   }) {
     this.#catalogueListComponent = catalogueListComponent;
     this.#appPopupContainer = appPopupContainer;
     this.#handleModeChange = onModeChange;
+    this.#handleDataChange = onDataChange;
   }
 
   init(product) {
@@ -46,7 +49,6 @@ export default class ProductPresenter {
     this.#productPopupComponent = new ProductPopupView({
       product: this.#product,
       onCheckButtonClick: this.#handleCheckButtonClick,
-      onUnCheckButtonClick: this.#handleUnCheckButtonClick,
 
     });
     render(this.#productComponent, this.#catalogueListComponent.element);
@@ -112,10 +114,6 @@ export default class ProductPresenter {
   };
 
   #handleCheckButtonClick = () => {
-
-  };
-
-  #handleUnCheckButtonClick = () => {
-
+    this.#handleDataChange({...this.#product, price: !this.#product.price});
   };
 }
