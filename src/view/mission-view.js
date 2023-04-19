@@ -20,7 +20,9 @@ const createMissionTemplate =
     </div>
   </section>`
 );
-
+/**
+ * Класс представления который создаёт компонент представления вступительного тезиса компании
+ */
 export default class MissionView extends AbstractView {
 
   get template() {

@@ -114,6 +114,6 @@ export default class ProductPresenter {
   };
 
   #handleCheckButtonClick = () => {
-    this.#handleDataChange({...this.#product, price: !this.#product.price});
+    this.#handleDataChange({...this.#product, price: 'для Вас всё бесплатно'});
   };
 }

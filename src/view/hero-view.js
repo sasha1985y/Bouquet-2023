@@ -20,7 +20,9 @@ const createHeroTemplate =
     </div>
   </section>`
 );
-
+/**
+ * Класс представления который создаёт компонент представления вступительного краткого охарактеризования компании
+ */
 export default class HeroView extends AbstractView {
 
   get template() {

@@ -10,7 +10,9 @@ const createCatalogueBtnWrapTemplate =
         </button>
     </div>`
 );
-
+/**
+ * Класс представления который создаёт компонент представления кнопки возврата в начало каталога
+ */
 export default class CatalogueBtnWrapView extends AbstractView {
 
   get template() {

@@ -4,7 +4,9 @@ const createContainerTemplate =
 () => (
   '<div class="container"></div>'
 );
-
+/**
+ * Класс представления который создаёт компонент представления который используется в нескольких частях приложения в качестве формообразующего
+ */
 export default class ContainerView extends AbstractView {
 
   get template() {

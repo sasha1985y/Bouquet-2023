@@ -18,7 +18,9 @@ const createHeaderContainerTemplate =
     </div>
   </div>`
 );
-
+/**
+ * Класс представления который создаёт элемент, который открывает попап с отложенными букетами
+ */
 export default class HeaderContainerView extends AbstractView {
 
   #handleHeaderCountBtnClick = null;

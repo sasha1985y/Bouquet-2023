@@ -18,7 +18,9 @@ const createCatalogueSortingTemplate =
         </div>
     </div>`
 );
-
+/**
+ * Класс представления который создаёт компонент представления сортировки по цене и одновременно заголовок каталога
+ */
 export default class CatalogueSortingView extends AbstractView {
 
   #handleSortTypeChange = null;
