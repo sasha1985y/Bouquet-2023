@@ -36,7 +36,9 @@ const createAdvantagesTemplate =
       </div>
   </section>`
 );
-
+/**
+ * Класс представления который создаёт компонент представления преимуществ компании
+ */
 export default class AdvantagesView extends AbstractView {
 
   get template() {

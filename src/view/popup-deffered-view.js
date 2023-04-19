@@ -55,7 +55,9 @@ const createPopupDefferedTemplate =
         </div>
   </section>`
 );
-
+/**
+ * Класс представления который создаёт компонент представления попапа для отложенных букетов
+ */
 export default class PopupDefferedView extends AbstractView {
 
   #handleDefferedCloseClick = null;

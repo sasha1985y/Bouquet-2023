@@ -6,7 +6,9 @@ const createCatalogueNoItemsTemplate =
     <p class="text text--align-center message__text">Извините, по вашему запросу букетов не найдено</p>
   </div>`
 );
-
+/**
+ * Класс представления который создаёт компонент представления сообщения при отсутствии данных с сервера
+ */
 export default class NoItemsView extends AbstractView {
 
   get template() {

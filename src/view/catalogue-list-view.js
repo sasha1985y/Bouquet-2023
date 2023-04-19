@@ -4,7 +4,9 @@ const createCatalogueListTemplate =
 () => (
   '<ul class="catalogue__list"></ul>'
 );
-
+/**
+ * Класс представления который создаёт компонент представления пустого списка для рендера карточек букетов
+ */
 export default class CatalogueListView extends AbstractView {
 
   get template() {

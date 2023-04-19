@@ -1,5 +1,5 @@
 import { render, remove } from '../framework/render.js';
-import { UpdateType, SortType } from '../const.js';
+import { UpdateType, SortType, ReasonType, ColorType } from '../const.js';
 import HeaderContainerView from '../view/header-container-view.js';
 import PopupDefferedView from '../view/popup-deffered-view.js';
 import HeroView from '../view/hero-view.js';
@@ -44,10 +44,10 @@ export default class ContentPresenter {
   #missionComponent = new MissionView();
   /** @type {HTMLElement} компонент представления преимуществ компании */
   #advantagesComponent = new AdvantagesView();
-  /** @type {HTMLElement} компонент представления выбора человека, которому подарят букет */
+  /** @type {HTMLElement} компонент представления фильтра по причине подарка */
   #filterReasonComponent = null;
-  /** @type {HTMLElement} компонент представления выбора цветовой гаммы букета */
-  #filterColorComponent = new FilterColorView();
+  /** @type {HTMLElement} компонент представления фильтра по цвету букета */
+  #filterColorComponent = null;
   /** @type {HTMLElement} компонент представления, содержащий контейнер с представлениями каталога приложения */
   #catalogueComponent = new CatalogueView();
   /** @type {HTMLElement} компонент представления который используется в нескольких частях приложения в качестве формообразующего */
@@ -56,7 +56,7 @@ export default class ContentPresenter {
   #catalogueSortingComponent = null;
   /** @type {HTMLElement} компонент представления пустого списка для рендера карточек букетов */
   #catalogueListComponent = new CatalogueListView();
-  /** @type {HTMLElement} компонент представления кнопки допоказа карточек букетов */
+  /** @type {HTMLElement} компонент представления кнопки возврата в начало каталога */
   #catalogueBtnWrapComponent = new CatalogueBtnWrapView();
   /** @type {HTMLElement} компонент представления сообщения при отсутствии данных с сервера */
   #noItemsComponent = new NoItemsView();
@@ -70,6 +70,26 @@ export default class ContentPresenter {
   #sourcedContentProducts = [];
   /** @type {string} режим сортировки по умолчанию */
   #currentSortType = SortType.DEFAULT;
+  /**
+   * @type {Object} объект с текущими настройками фильтрации
+   * @param {string} reason кому букет
+   * @param {string} colorAll все цвета?
+   * @param {string} colorRed красный?
+   * @param {string} colorWhite белый?
+   * @param {string} colorViolet фиолетовый?
+   * @param {string} colorYellow желтый?
+   * @param {string} colorPink розовый?
+   */
+  #objectFilterSettings = {
+    reason: ReasonType.ALL,
+    colorAll: ColorType.COLORS,
+    colorRed: ColorType.EMPTY,
+    colorWhite: ColorType.EMPTY,
+    colorViolet: ColorType.EMPTY,
+    colorYellow: ColorType.EMPTY,
+    colorPink: ColorType.EMPTY
+  };
+
 
   constructor({
     productsModel,
@@ -108,13 +128,12 @@ export default class ContentPresenter {
       render(this.#missionComponent, this.#appMainContainer);
       render(this.#advantagesComponent, this.#appMainContainer);
       this.#renderFilterReasonComponent({products: this.#contentProducts});
-      render(this.#filterColorComponent, this.#appMainContainer);
+      this.#renderFilterColorComponent();
       render(this.#catalogueComponent, this.#appMainContainer);
       render(this.#containerComponent, this.#catalogueComponent.element);
       render(this.#catalogueListComponent, this.#containerComponent.element);
       render(this.#catalogueBtnWrapComponent, this.#containerComponent.element);
 
-      //console.log(this.#contentProducts);
     }
   };
 
@@ -146,40 +165,83 @@ export default class ContentPresenter {
   #renderFilterReasonComponent({products}){
     this.#filterReasonComponent = new FilterReasonView({
       onFilterChange: (filter) => {
-        if (filter === 'filter-reason-field-id-0') {
+        if (filter === 'All') {
           const allFilterProducts = products.slice();
           this.#renderProductsList({products: allFilterProducts});
           this.#renderCatalogueShowMoreBtnComponent({products: allFilterProducts});
+          this.#objectFilterSettings.reason = ReasonType.ALL;
 
-        } else if (filter === 'filter-reason-field-id-1') {
-          const birthdayboyFilterProducts = products.slice().filter((product) => product.type === 'birthdayboy');
+        } else if (filter === 'birthdayboy') {
+          const birthdayboyFilterProducts = products.slice().filter((product) => product.type === filter);
           this.#renderProductsList({products: birthdayboyFilterProducts});
           this.#renderCatalogueShowMoreBtnComponent({products: birthdayboyFilterProducts});
+          this.#objectFilterSettings.reason = ReasonType.BIRHDAYBOY;
 
-        } else if (filter === 'filter-reason-field-id-2') {
-          const bridgeFilterProducts = products.slice().filter((product) => product.type === 'bridge');
+        } else if (filter === 'bridge') {
+          const bridgeFilterProducts = products.slice().filter((product) => product.type === filter);
           this.#renderProductsList({products: bridgeFilterProducts});
           this.#renderCatalogueShowMoreBtnComponent({products: bridgeFilterProducts});
+          this.#objectFilterSettings.reason = ReasonType.BRIDGE;
 
-        } else if (filter === 'filter-reason-field-id-3') {
-          const motherdayFilterProducts = products.slice().filter((product) => product.type === 'motherday');
+        } else if (filter === 'motherday') {
+          const motherdayFilterProducts = products.slice().filter((product) => product.type === filter);
           this.#renderProductsList({products: motherdayFilterProducts});
           this.#renderCatalogueShowMoreBtnComponent({products: motherdayFilterProducts});
+          this.#objectFilterSettings.reason = ReasonType.MOTHERDAY;
 
-        } else if (filter === 'filter-reason-field-id-4') {
-          const colleaguesFilterProducts = products.slice().filter((product) => product.type === 'colleagues');
+        } else if (filter === 'colleagues') {
+          const colleaguesFilterProducts = products.slice().filter((product) => product.type === filter);
           this.#renderProductsList({products: colleaguesFilterProducts});
           this.#renderCatalogueShowMoreBtnComponent({products: colleaguesFilterProducts});
+          this.#objectFilterSettings.reason = ReasonType.COLLEAGUES;
 
-        } else if (filter === 'filter-reason-field-id-5') {
-          const forloveFilterProducts = products.slice().filter((product) => product.type === 'forlove');
+        } else if (filter === 'forlove') {
+          const forloveFilterProducts = products.slice().filter((product) => product.type === filter);
           this.#renderProductsList({products: forloveFilterProducts});
           this.#renderCatalogueShowMoreBtnComponent({products: forloveFilterProducts});
+          this.#objectFilterSettings.reason = ReasonType.FORLOVE;
 
         }
       }
     });
     render(this.#filterReasonComponent, this.#appMainContainer);
+  }
+
+  #renderFilterColorComponent(){
+    this.#filterColorComponent = new FilterColorView({
+      onColorFilterChange: (filter) => {
+        if (filter === 'all') {
+          this.#objectFilterSettings.colorAll = ColorType.COLORS;
+          this.#objectFilterSettings.colorRed = ColorType.EMPTY;
+          this.#objectFilterSettings.colorWhite = ColorType.EMPTY;
+          this.#objectFilterSettings.colorViolet = ColorType.EMPTY;
+          this.#objectFilterSettings.colorYellow = ColorType.EMPTY;
+          this.#objectFilterSettings.colorPink = ColorType.EMPTY;
+
+        } else if (filter === 'red') {
+          this.#objectFilterSettings.colorRed = ColorType.RED;
+          this.#objectFilterSettings.colorAll = ColorType.EMPTY;
+
+        } else if (filter === 'white') {
+          this.#objectFilterSettings.colorWhite = ColorType.WHITE;
+          this.#objectFilterSettings.colorAll = ColorType.EMPTY;
+
+        } else if (filter === 'violet') {
+          this.#objectFilterSettings.colorViolet = ColorType.VIOLET;
+          this.#objectFilterSettings.colorAll = ColorType.EMPTY;
+
+        } else if (filter === 'yellow') {
+          this.#objectFilterSettings.colorYellow = ColorType.YELLOW;
+          this.#objectFilterSettings.colorAll = ColorType.EMPTY;
+
+        } else if (filter === 'pink') {
+          this.#objectFilterSettings.colorPink = ColorType.PINK;
+          this.#objectFilterSettings.colorAll = ColorType.EMPTY;
+
+        }
+      }
+    });
+    render(this.#filterColorComponent, this.#appMainContainer);
   }
 
   #renderSorting({sortType, products, sourcedProducts}){
@@ -241,15 +303,10 @@ export default class ContentPresenter {
     this.#sortProducts(sortType, products, sourcedProducts);
     this.#clearProductList();
     this.#renderProductsList(products);
-    //- Сортируем задачи
-    //- Очищаем список
-    //- Рендерим список заново
+
   };
 
   #sortProducts({sortType, products, sourcedProducts}) {
-    // 2. Этот исходный массив задач необходим,
-    // потому что для сортировки мы будем мутировать
-    // массив в свойстве _boardTasks
     switch (sortType) {
       case SortType.PRICE_UP:
         products.sort(sortPriceUp);
@@ -258,8 +315,7 @@ export default class ContentPresenter {
         products.sort(sortPriceDown);
         break;
       default:
-        // 3. А когда пользователь захочет "вернуть всё, как было",
-        // мы просто запишем в _boardTasks исходный массив
+
         products = [...sourcedProducts];
     }
 
